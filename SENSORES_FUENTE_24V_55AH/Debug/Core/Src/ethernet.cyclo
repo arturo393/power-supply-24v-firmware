@@ -1,0 +1,15 @@
+../Core/Src/ethernet.c:9:6:transmitir_spi	2
+../Core/Src/ethernet.c:20:6:transmitir_recibir_spi	2
+../Core/Src/ethernet.c:34:6:common_register_block	2
+../Core/Src/ethernet.c:55:6:eth_write_reg	3
+../Core/Src/ethernet.c:85:6:socket_write_register	2
+../Core/Src/ethernet.c:110:6:eth_read_reg	1
+../Core/Src/ethernet.c:125:6:common_reg_config	1
+../Core/Src/ethernet.c:135:6:socket_reg_config	1
+../Core/Src/ethernet.c:159:6:eth_transmit	1
+../Core/Src/ethernet.c:192:6:socket_cmd_cfg	1
+../Core/Src/ethernet.c:198:10:read_socket_n_rx_buffer_len	1
+../Core/Src/ethernet.c:204:10:read_socket_n_rx_buffer_read_addr	1
+../Core/Src/ethernet.c:210:6:update_socket_n_rx_buffer_addr	1
+../Core/Src/ethernet.c:218:9:read_socket_n_rx_buffer	2
+../Core/Src/ethernet.c:237:6:init_w5500_hw	1
