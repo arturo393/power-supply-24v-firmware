@@ -6,7 +6,9 @@
  */
 #include "ethernet.h"
 
-void transmitir_spi(uint8_t *p, uint8_t len) { //Solo Transmite para modificar o acceder o escribir a cierto registro.
+
+// This function transmits data via SPI. It's used to modify, access, or write to a specific register.
+void transmitir_spi(uint8_t *p, uint8_t len) {
 	HAL_StatusTypeDef res = HAL_ERROR;
 	HAL_GPIO_WritePin( w5500_hw.nssPort, w5500_hw.nssPin, GPIO_PIN_RESET); // pull the pin low
 	res = HAL_SPI_Transmit(w5500_hw.spi, p, len, HAL_MAX_DELAY);
@@ -16,9 +18,9 @@ void transmitir_spi(uint8_t *p, uint8_t len) { //Solo Transmite para modificar o
 	HAL_Delay(10);
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
+// This function transmits a command and receives data from the w5500 chip via SPI.
 void transmitir_recibir_spi(uint8_t *p_t, uint8_t len_t, uint8_t *p_r,
-		uint16_t len_r) { //manda un comando (Transmite) para recibir data que envía el chip w5500
+		uint16_t len_r) {
 	HAL_StatusTypeDef res;
 	HAL_GPIO_WritePin( w5500_hw.nssPort, w5500_hw.nssPin, GPIO_PIN_RESET); // pull the pin low
 	res = HAL_SPI_Transmit(w5500_hw.spi, p_t, len_t, HAL_MAX_DELAY);
@@ -30,9 +32,9 @@ void transmitir_recibir_spi(uint8_t *p_t, uint8_t len_t, uint8_t *p_r,
 	HAL_Delay(10);
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
+// Configures the common registers responsible for IP and MAC addresses.
 void common_register_block(uint8_t *buff, uint16_t address, uint8_t *data,
-		uint8_t len) { // Configuración de los registros comunes: encargados de la dirección IP y dirección MAC
+		uint8_t len) {
 	uint8_t bsb = 0x00;
 	uint8_t rwb = 0x01 << 2; // write
 	uint8_t om = 00; // VDM
@@ -51,8 +53,9 @@ void common_register_block(uint8_t *buff, uint16_t address, uint8_t *data,
 	transmitir_spi(buff, (3 + len));
 	//free(buff);
 }
-//////////////////////////////////////////////////////////////////////////////////////////////////
-void eth_write_reg(uint8_t bsb, uint16_t address, uint8_t *data, uint16_t len) { // Los registros de socket brindan la comunicación del canal. Con BSB[4:0] se puede seleccionar el socket a utilizar
+
+// Writes to the socket registers to enable channel communication. BSB[4:0] selects the socket to use.
+void eth_write_reg(uint8_t bsb, uint16_t address, uint8_t *data, uint16_t len) {
 
 	uint8_t *buff;
 	buff = malloc(sizeof(uint8_t) * len + 3);
@@ -82,8 +85,8 @@ void eth_write_reg(uint8_t bsb, uint16_t address, uint8_t *data, uint16_t len) {
 	free(buff);
 }
 
-void socket_write_register(uint8_t *buff, uint16_t address, uint8_t bsb,
-		uint8_t *data, uint16_t len) { // Los registros de socket brindan la comunicación del canal. Con BSB[4:0] se puede seleccionar el socket a utilizar
+// Writes to the socket registers to enable channel communication. BSB[4:0] selects the socket to use.
+void socket_write_register(uint8_t *buff, uint16_t address, uint8_t bsb,uint8_t *data, uint16_t len) {
 	uint16_t os_address;
 	uint8_t rwb;
 	uint8_t om;
@@ -107,9 +110,11 @@ void socket_write_register(uint8_t *buff, uint16_t address, uint8_t bsb,
 	transmitir_spi(buff, t);
 }
 
+
+// Reads from the specified register via SPI.
 void eth_read_reg(uint8_t BSB_SELECT, uint16_t offset, uint8_t *buffer_r,
 		uint16_t buffer_r_len) {
-	uint16_t offset_address=0; /* esta inicialización*/
+	uint16_t offset_address=0;
 	uint8_t buffer_t[3];
 	offset_address = offset << 8;
 	uint8_t BSB = BSB_SELECT << 3; // block select bit: 0x01 SOCKET REGISTER, 0x02 SOCKET TX BUFFER, 0x03 SOCKET RX BUFFER
@@ -122,6 +127,8 @@ void eth_read_reg(uint8_t BSB_SELECT, uint16_t offset, uint8_t *buffer_r,
 	transmitir_recibir_spi(buffer_t, 3, buffer_r, buffer_r_len);
 }
 
+
+// Configures the common registers.
 void common_reg_config(uint8_t buffer[243], uint8_t mode, uint8_t gar[],
 		uint8_t sub_r[], uint8_t shar[], uint8_t sipr[]) {
 	//---------------------- configuration common register
@@ -132,6 +139,7 @@ void common_reg_config(uint8_t buffer[243], uint8_t mode, uint8_t gar[],
 	common_register_block(buffer, 0x0F, sipr, sizeof(sipr));
 }
 
+// Configures the socket registers.
 void socket_reg_config(uint8_t buffer[243], uint8_t S_MR, uint8_t S_PORT[2],
 		uint8_t S_DHAR[6], uint8_t S_DPORT[2], uint8_t S_MMS[2], uint8_t S_TTL,
 		uint8_t S_RXBUF_SIZE, uint8_t S_TXBUF_SIZE, uint8_t S_CR_open,
@@ -156,6 +164,8 @@ void socket_reg_config(uint8_t buffer[243], uint8_t S_MR, uint8_t S_PORT[2],
 			sizeof(S_CR_listen));
 }
 
+
+// Handles the transmission process through the Ethernet interface.
 void eth_transmit(uint8_t sn_reg, uint8_t *data, uint16_t data_len) {
 	/*
 	 * 1. Read the starting address for saving the transmitting data.
@@ -189,24 +199,28 @@ void eth_transmit(uint8_t sn_reg, uint8_t *data, uint16_t data_len) {
 
 }
 
+// Configures the command register of socket
 void socket_cmd_cfg(uint8_t sn_reg, uint8_t cmd) {
 	// SOCK_ESTABLISHED
 	eth_write_reg(sn_reg, S_CR_OFFSET, (uint8_t*) &cmd, sizeof(cmd));
 
 }
 
+// Gives the length of data buffer reception
 uint16_t read_socket_n_rx_buffer_len(uint8_t sn_reg) {
 	uint8_t s_RX_RS[2];
 	eth_read_reg(sn_reg, S_RX_RS_OFFSET, s_RX_RS, sizeof(s_RX_RS));
 	return ((s_RX_RS[1]) & 0xFFFF) | ((s_RX_RS[0] << 8) & 0xFFFF);
 }
 
+// To handle the start and end of the receive buffer
 uint16_t read_socket_n_rx_buffer_read_addr(uint8_t sn_reg) {
 	uint8_t s_RX_RD[2];
 	eth_read_reg(sn_reg, S_RX_RD_OFFSET, s_RX_RD, sizeof(s_RX_RD));
 	return ((s_RX_RD[1]) & 0xFFFF) | ((s_RX_RD[0] << 8) & 0xFFFF);
 }
 
+// Update the address of buffer
 void update_socket_n_rx_buffer_addr(uint8_t sn_reg, uint16_t offset_address) {
 	uint8_t s_RX_RD[2];
 	s_RX_RD[0] = (offset_address >> 8) & 0x00FF;
@@ -215,6 +229,7 @@ void update_socket_n_rx_buffer_addr(uint8_t sn_reg, uint16_t offset_address) {
 	eth_write_reg(sn_reg, S_RX_RD_OFFSET+1, &(s_RX_RD[1]), 1);
 }
 
+// Extract the data of buffer reception
 uint8_t read_socket_n_rx_buffer(uint8_t sn_reg, uint8_t *data_rcv) {
 	uint16_t len_rx;
 	uint16_t s_RX_RD_addr;
@@ -233,7 +248,7 @@ uint8_t read_socket_n_rx_buffer(uint8_t sn_reg, uint8_t *data_rcv) {
 }
 
 
-
+// initialization chip W5500
 void init_w5500_hw(W5500_HW_t *w5500_hw, SPI_HandleTypeDef *hspi,
 		GPIO_TypeDef *nssPort, uint16_t nssPin, GPIO_TypeDef *nrstPort,
 		uint16_t nrstPin) {
@@ -259,6 +274,63 @@ void init_w5500_hw(W5500_HW_t *w5500_hw, SPI_HandleTypeDef *hspi,
 }
 
 
+// Send packet with specific TCP/IP protocol
+void send_modbus_tcp_ip(uint8_t socket, uint16_t transaction_id, uint8_t unit_id,
+                        uint16_t start_address, uint32_t curr_bat, uint32_t curr_up, uint32_t curr_down,
+                        uint32_t volt_bat, uint8_t ac_active) {
+
+    uint8_t tx_buffer[29]; // 7 bytes MBAP + 22 bytes PDU
+
+    // Built MBAP Header
+    tx_buffer[0] = (transaction_id >> 8) & 0xFF; // Transaction ID high byte
+    tx_buffer[1] = transaction_id & 0xFF;        // Transaction ID low byte
+    tx_buffer[2] = 0x00;                         // Protocol ID high byte
+    tx_buffer[3] = 0x00;                         // Protocol ID low byte
+    tx_buffer[4] = 0x00;                         // Length high byte
+    tx_buffer[5] = 0x15;                         // Length low byte (PDU length + Unit ID)
+    tx_buffer[6] = unit_id;                      // Unit ID
+
+    // Built PDU
+    tx_buffer[7] = 0x10;                         // Function Code (Write Multiple Registers)
+    tx_buffer[8] = (start_address >> 8) & 0xFF;  // Start Address high byte
+    tx_buffer[9] = start_address & 0xFF;         // Start Address low byte
+    tx_buffer[10] = 0x00;                        // Quantity of Registers high byte
+    tx_buffer[11] = 0x06;                        // Quantity of Registers low byte
+    tx_buffer[12] = 0x0C;                        // Byte Count (6 registers * 2 bytes)
+
+    // convert integer values ​​to floats
+    float curr_bat_f = (float)curr_bat * 3.3 / 4096;
+    float curr_up_f = (float)curr_up * 3.3 / 4096;
+    float curr_down_f = (float)curr_down * 3.3 / 4096;
+    float volt_bat_f = (float)volt_bat * 3.3 / 4096;
+
+    // Convert the values from float to bytes
+    uint8_t *curr_bat_bytes = (uint8_t*)&curr_bat_f;
+    uint8_t *curr_up_bytes = (uint8_t*)&curr_up_f;
+    uint8_t *curr_down_bytes = (uint8_t*)&curr_down_f;
+    uint8_t *volt_bat_bytes = (uint8_t*)&volt_bat_f;
+
+    // Add the values to PDU
+    tx_buffer[13] = curr_bat_bytes[1];
+    tx_buffer[14] = curr_bat_bytes[0];
+    tx_buffer[15] = curr_bat_bytes[3];
+    tx_buffer[16] = curr_bat_bytes[2];
+    tx_buffer[17] = curr_up_bytes[1];
+    tx_buffer[18] = curr_up_bytes[0];
+    tx_buffer[19] = curr_up_bytes[3];
+    tx_buffer[20] = curr_up_bytes[2];
+    tx_buffer[21] = curr_down_bytes[1];
+    tx_buffer[22] = curr_down_bytes[0];
+    tx_buffer[23] = curr_down_bytes[3];
+    tx_buffer[24] = curr_down_bytes[2];
+    tx_buffer[25] = volt_bat_bytes[1];
+    tx_buffer[26] = volt_bat_bytes[0];
+    tx_buffer[27] = volt_bat_bytes[3];
+    tx_buffer[28] = volt_bat_bytes[2];
+
+    // Transmission of packet
+    eth_transmit(socket, tx_buffer, sizeof(tx_buffer));
+}
 
 
 

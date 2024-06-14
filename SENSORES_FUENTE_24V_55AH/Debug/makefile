@@ -60,8 +60,8 @@ all: main-build
 main-build: SENSORES_FUENTE_24V_55AH.elf secondary-outputs
 
 # Tool invocations
-SENSORES_FUENTE_24V_55AH.elf SENSORES_FUENTE_24V_55AH.map: $(OBJS) $(USER_OBJS) /home/uqommdev/development/SENSORES_FUENTE_24V_55AH/STM32G030K6TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "SENSORES_FUENTE_24V_55AH.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"/home/uqommdev/development/SENSORES_FUENTE_24V_55AH/STM32G030K6TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="SENSORES_FUENTE_24V_55AH.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+SENSORES_FUENTE_24V_55AH.elf SENSORES_FUENTE_24V_55AH.map: $(OBJS) $(USER_OBJS) C:\Users\Alfonso\Desktop\Power\ Suply\ Monitor\SENSORES_FUENTE_24V_55AH\STM32G030K6TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "SENSORES_FUENTE_24V_55AH.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"C:\Users\Alfonso\Desktop\Power Suply Monitor\SENSORES_FUENTE_24V_55AH\STM32G030K6TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="SENSORES_FUENTE_24V_55AH.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

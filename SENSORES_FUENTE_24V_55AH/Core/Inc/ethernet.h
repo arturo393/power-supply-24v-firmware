@@ -1,8 +1,8 @@
 /*
  * ethernet.h
  *
- *  Created on: Jan 8, 2024
- *      Author: Alfonso
+ *  Created on: June 14, 2024
+ *      Author: A.R.T
  */
 
 #ifndef INC_ETHERNET_H_
@@ -10,15 +10,13 @@
 #include "main.h"
 #include "stdlib.h"
 #include "string.h"
-//#include "SX1278.h"
-//#include "rdss.h"
 #include "stm32g0xx_hal_spi.h"
 
 extern SPI_HandleTypeDef hspi1;
 extern uint8_t *p;
 
 
-//Para manejar los registros de interrupciones//
+//To handle the interrupt registers//
 #define Sn_IR_SEND_OK  (0xff & (1<<4))
 #define Sn_IR_TIME_OUT (0xff & (1<<3))
 #define Sn_RECEIVE     (0xff & (1<<2))
@@ -28,11 +26,10 @@ extern uint8_t *p;
 
 #define S_N_TX_OFFSET 0x01
 #define S_N_RX_OFFSET 0x02
-//Selección bloque común de registros//
+//common block registers//
 #define COMMON_REG_OFFSET 0X00
 #define PHYCFGR_RST_OFFSET 0x2E
-//Selección de socket registers//
-
+//Selection of the socket registers//
 #define S_CR_OFFSET 0x01
 #define S_IR_OFFSET 0x02
 #define S_TX_RD_OFFSET 0x22
@@ -107,20 +104,19 @@ typedef struct {
     uint16_t nrstPin;
 } W5500_HW_t;
 
-//Init W5500
-
+//W5500 SPI
 void init_w5500_hw(W5500_HW_t *w5500_hw, SPI_HandleTypeDef *hspi,
 		GPIO_TypeDef *nssPort, uint16_t nssPin, GPIO_TypeDef *nrstPort,
 		uint16_t nrstPin);
 
 extern W5500_HW_t w5500_hw;
 
-// Funciones de transmisión recepción vía SPI:
+// For SPI:
 void transmitir_spi(uint8_t* p, uint8_t len);
 void transmitir_recibir_spi(uint8_t* p_t, uint8_t len_t, uint8_t* p_r, uint16_t len_r);
 void eth_read_reg(uint8_t BSB_SELECT,uint16_t addr, uint8_t *buffer_r, uint16_t buffer_r_len);
 
-// Funciones para el ajuste de los registros del chip w5500:
+// Functions to adjust the chip W5500 registers  :
 void common_register_block(uint8_t* buff, uint16_t address, uint8_t* data,uint8_t len);
 void socket_write_register(uint8_t* buff, uint16_t address,uint8_t bsb, uint8_t* data,uint16_t len);
 void eth_write_reg(uint8_t bsb, uint16_t address, uint8_t *data, uint16_t len);
@@ -130,7 +126,7 @@ void socket_reg_config(uint8_t buffer[243], uint8_t S_MR, uint8_t S_PORT[2],
 		uint8_t S_RXBUF_SIZE, uint8_t S_TXBUF_SIZE, uint8_t S_CR_open,
 		uint8_t S_CR_listen);
 
-//Transmitir por ethernet
+// For Transmission
 void eth_transmit(uint8_t socket_n_register, uint8_t *data_transmitir, uint16_t data_len);
 void socket_cmd_cfg(uint8_t sn_reg, uint8_t cmd);
 uint8_t read_socket_n_rx_buffer(uint8_t sn_reg, uint8_t *data_reception);
@@ -139,4 +135,10 @@ uint16_t read_socket_n_rx_buffer_len(uint8_t sn_reg);
 uint16_t read_socket_n_rx_buffer_read_addr(uint8_t sn_reg);
 void update_socket_n_rx_buffer_addr(uint8_t sn_reg, uint16_t offset_address);
 uint8_t read_socket_n_rx_buffer(uint8_t sn_reg, uint8_t *data_reception);
+
+// Modbus TCP/IP
+void send_modbus_tcp_ip(uint8_t socket, uint16_t transaction_id, uint8_t unit_id,
+  uint16_t start_address, uint32_t curr_bat, uint32_t curr_up, uint32_t curr_down,
+  uint32_t volt_bat, uint8_t ac_active);
+
 #endif /* INC_ETHERNET_H_ */

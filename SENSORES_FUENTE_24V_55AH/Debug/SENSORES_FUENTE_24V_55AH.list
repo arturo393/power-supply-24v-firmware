@@ -27,25 +27,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000028  00000000  00000000  0000708c  2**0
                   CONTENTS, READONLY
- 12 .debug_info   00012a34  00000000  00000000  000070b4  2**0
+ 12 .debug_info   00012b79  00000000  00000000  000070b4  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00002772  00000000  00000000  00019ae8  2**0
+ 13 .debug_abbrev 000027b1  00000000  00000000  00019c2d  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00000f60  00000000  00000000  0001c260  2**3
+ 14 .debug_aranges 00000f68  00000000  00000000  0001c3e0  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_rnglists 00000c07  00000000  00000000  0001d1c0  2**0
+ 15 .debug_rnglists 00000c0e  00000000  00000000  0001d348  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  0001789e  00000000  00000000  0001ddc7  2**0
+ 16 .debug_macro  0001789e  00000000  00000000  0001df56  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   000138c7  00000000  00000000  00035665  2**0
+ 17 .debug_line   000146a5  00000000  00000000  000357f4  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    00092516  00000000  00000000  00048f2c  2**0
+ 18 .debug_str    000925e3  00000000  00000000  00049e99  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  000db442  2**0
+ 19 .comment      00000043  00000000  00000000  000dc47c  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00003b18  00000000  00000000  000db488  2**2
+ 20 .debug_frame  00003b3c  00000000  00000000  000dc4c0  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000062  00000000  00000000  000defa0  2**0
+ 21 .debug_line_str 00000074  00000000  00000000  000dfffc  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -467,12 +467,12 @@ Disassembly of section .text:
  80003ea:	46c0      	nop			@ (mov r8, r8)
 
 080003ec <transmitir_spi>:
- *  Created on: Jan 8, 2024
- *      Author: A.R.T.
  */
 #include "ethernet.h"
 
-void transmitir_spi(uint8_t *p, uint8_t len) { //Solo Transmite para modificar o acceder o escribir a cierto registro.
+
+// This function transmits data via SPI. It's used to modify, access, or write to a specific register.
+void transmitir_spi(uint8_t *p, uint8_t len) {
  80003ec:	b5b0      	push	{r4, r5, r7, lr}
  80003ee:	b084      	sub	sp, #16
  80003f0:	af00      	add	r7, sp, #0
@@ -534,9 +534,9 @@ void transmitir_spi(uint8_t *p, uint8_t len) { //Solo Transmite para modificar o
 
 0800045c <transmitir_recibir_spi>:
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
+// This function transmits a command and receives data from the w5500 chip via SPI.
 void transmitir_recibir_spi(uint8_t *p_t, uint8_t len_t, uint8_t *p_r,
-		uint16_t len_r) { //manda un comando (Transmite) para recibir data que envía el chip w5500
+		uint16_t len_r) {
  800045c:	b5f0      	push	{r4, r5, r6, r7, lr}
  800045e:	b087      	sub	sp, #28
  8000460:	af00      	add	r7, sp, #0
@@ -617,9 +617,9 @@ void transmitir_recibir_spi(uint8_t *p_t, uint8_t len_t, uint8_t *p_r,
 
 080004f0 <common_register_block>:
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
+// Configures the common registers responsible for IP and MAC addresses.
 void common_register_block(uint8_t *buff, uint16_t address, uint8_t *data,
-		uint8_t len) { // Configuración de los registros comunes: encargados de la dirección IP y dirección MAC
+		uint8_t len) {
  80004f0:	b5b0      	push	{r4, r5, r7, lr}
  80004f2:	b088      	sub	sp, #32
  80004f4:	af00      	add	r7, sp, #0
@@ -754,8 +754,9 @@ void common_register_block(uint8_t *buff, uint16_t address, uint8_t *data,
  80005d4:	20000370 	.word	0x20000370
 
 080005d8 <eth_write_reg>:
-//////////////////////////////////////////////////////////////////////////////////////////////////
-void eth_write_reg(uint8_t bsb, uint16_t address, uint8_t *data, uint16_t len) { // Los registros de socket brindan la comunicación del canal. Con BSB[4:0] se puede seleccionar el socket a utilizar
+
+// Writes to the socket registers to enable channel communication. BSB[4:0] selects the socket to use.
+void eth_write_reg(uint8_t bsb, uint16_t address, uint8_t *data, uint16_t len) {
  80005d8:	b590      	push	{r4, r7, lr}
  80005da:	b089      	sub	sp, #36	@ 0x24
  80005dc:	af00      	add	r7, sp, #0
@@ -922,8 +923,8 @@ void eth_write_reg(uint8_t bsb, uint16_t address, uint8_t *data, uint16_t len) {
 
 080006f0 <socket_write_register>:
 
-void socket_write_register(uint8_t *buff, uint16_t address, uint8_t bsb,
-		uint8_t *data, uint16_t len) { // Los registros de socket brindan la comunicación del canal. Con BSB[4:0] se puede seleccionar el socket a utilizar
+// Writes to the socket registers to enable channel communication. BSB[4:0] selects the socket to use.
+void socket_write_register(uint8_t *buff, uint16_t address, uint8_t bsb,uint8_t *data, uint16_t len) {
  80006f0:	b5b0      	push	{r4, r5, r7, lr}
  80006f2:	b088      	sub	sp, #32
  80006f4:	af00      	add	r7, sp, #0
@@ -1071,6 +1072,8 @@ void socket_write_register(uint8_t *buff, uint16_t address, uint8_t bsb,
 
 080007e8 <eth_read_reg>:
 
+
+// Reads from the specified register via SPI.
 void eth_read_reg(uint8_t BSB_SELECT, uint16_t offset, uint8_t *buffer_r,
 		uint16_t buffer_r_len) {
  80007e8:	b5b0      	push	{r4, r5, r7, lr}
@@ -1091,7 +1094,7 @@ void eth_read_reg(uint8_t BSB_SELECT, uint16_t offset, uint8_t *buffer_r,
  8000806:	1dbb      	adds	r3, r7, #6
  8000808:	1c0a      	adds	r2, r1, #0
  800080a:	801a      	strh	r2, [r3, #0]
-	uint16_t offset_address=0; /* esta inicialización*/
+	uint16_t offset_address=0;
  800080c:	211e      	movs	r1, #30
  800080e:	187b      	adds	r3, r7, r1
  8000810:	2200      	movs	r2, #0
@@ -1168,8 +1171,8 @@ void eth_read_reg(uint8_t BSB_SELECT, uint16_t offset, uint8_t *buffer_r,
  800088a:	bdb0      	pop	{r4, r5, r7, pc}
 
 0800088c <socket_reg_config>:
-}
 
+// Configures the socket registers.
 void socket_reg_config(uint8_t buffer[243], uint8_t S_MR, uint8_t S_PORT[2],
 		uint8_t S_DHAR[6], uint8_t S_DPORT[2], uint8_t S_MMS[2], uint8_t S_TTL,
 		uint8_t S_RXBUF_SIZE, uint8_t S_TXBUF_SIZE, uint8_t S_CR_open,
@@ -1285,11 +1288,11 @@ void socket_reg_config(uint8_t buffer[243], uint8_t S_MR, uint8_t S_PORT[2],
  8000952:	bd80      	pop	{r7, pc}
 
 08000954 <socket_cmd_cfg>:
-	cmd[0] = S_CR_SEND;
 	eth_write_reg(sn_reg, S_CR_OFFSET, cmd, sizeof(cmd));
 
 }
 
+// Configures the command register of socket
 void socket_cmd_cfg(uint8_t sn_reg, uint8_t cmd) {
  8000954:	b580      	push	{r7, lr}
  8000956:	b082      	sub	sp, #8
@@ -1317,6 +1320,7 @@ void socket_cmd_cfg(uint8_t sn_reg, uint8_t cmd) {
 
 0800097c <read_socket_n_rx_buffer_len>:
 
+// Gives the length of data buffer reception
 uint16_t read_socket_n_rx_buffer_len(uint8_t sn_reg) {
  800097c:	b590      	push	{r4, r7, lr}
  800097e:	b085      	sub	sp, #20
@@ -1353,6 +1357,7 @@ uint16_t read_socket_n_rx_buffer_len(uint8_t sn_reg) {
 
 080009b6 <read_socket_n_rx_buffer_read_addr>:
 
+// To handle the start and end of the receive buffer
 uint16_t read_socket_n_rx_buffer_read_addr(uint8_t sn_reg) {
  80009b6:	b590      	push	{r4, r7, lr}
  80009b8:	b085      	sub	sp, #20
@@ -1389,6 +1394,7 @@ uint16_t read_socket_n_rx_buffer_read_addr(uint8_t sn_reg) {
 
 080009f0 <update_socket_n_rx_buffer_addr>:
 
+// Update the address of buffer
 void update_socket_n_rx_buffer_addr(uint8_t sn_reg, uint16_t offset_address) {
  80009f0:	b590      	push	{r4, r7, lr}
  80009f2:	b085      	sub	sp, #20
@@ -1439,6 +1445,7 @@ void update_socket_n_rx_buffer_addr(uint8_t sn_reg, uint16_t offset_address) {
 
 08000a44 <read_socket_n_rx_buffer>:
 
+// Extract the data of buffer reception
 uint8_t read_socket_n_rx_buffer(uint8_t sn_reg, uint8_t *data_rcv) {
  8000a44:	b5f0      	push	{r4, r5, r6, r7, lr}
  8000a46:	b085      	sub	sp, #20
@@ -1523,7 +1530,7 @@ uint8_t read_socket_n_rx_buffer(uint8_t sn_reg, uint8_t *data_rcv) {
 08000acc <init_w5500_hw>:
 
 
-
+// initialization chip W5500
 void init_w5500_hw(W5500_HW_t *w5500_hw, SPI_HandleTypeDef *hspi,
 		GPIO_TypeDef *nssPort, uint16_t nssPin, GPIO_TypeDef *nrstPort,
 		uint16_t nrstPin) {

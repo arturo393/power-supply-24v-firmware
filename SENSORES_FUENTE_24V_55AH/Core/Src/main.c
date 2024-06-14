@@ -270,18 +270,22 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	while (1) {
-		/* Read analog values */
 
+		/* Read analog values */
 		curr_bat = Read_ADC_Channel(ADC_CHANNEL_0);  // PA0
 		curr_up = Read_ADC_Channel(ADC_CHANNEL_1);   // PA1
 		curr_down = Read_ADC_Channel(ADC_CHANNEL_3); // PA3
 		volt_bat = Read_ADC_Channel(ADC_CHANNEL_4);  // PA4
 
 		/* Read digital value */
-		//Ac_active = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_2); // PA2
+		Ac_active = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_2); // PA2
+
 		/* Add your code to process the adcValue */
-		//HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_15);
-		//HAL_Delay(100);
+		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_15);
+		HAL_Delay(100);
+
+		// Send data via Modbus TCP/IP
+		send_modbus_tcp_ip(0, 1, 1, 0, curr_bat, curr_up, curr_down, volt_bat, Ac_active);
 
 		// LEER REGISTRO IR
 		eth_read_reg(socket_0_register, S_IR_OFFSET, &s_IR, sizeof(s_IR));
@@ -311,12 +315,12 @@ int main(void)
 
 		}
 
-		// lectura status del socket
-		eth_read_reg(socket_0_register, S_SR_OFFSET, &s_SR, sizeof(s_SR));
+	   // Reading the status of the socket
+	   eth_read_reg(socket_0_register, S_SR_OFFSET, &s_SR, sizeof(s_SR));
 
-    /* USER CODE END WHILE */
+       /* USER CODE END WHILE */
 
-    /* USER CODE BEGIN 3 */
+       /* USER CODE BEGIN 3 */
 	}
   /* USER CODE END 3 */
 }
