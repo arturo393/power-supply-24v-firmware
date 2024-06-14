@@ -270,7 +270,12 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	while (1) {
-
+		/*DHCP validation */
+	    if (DHCP_run() == DHCP_RET_UPDATE) {
+	       //Update network settings after getting IP
+	       wizchip_getnetinfo(&net_info);
+	       printf("IP Address assigned by DHCP: %d.%d.%d.%d\n", net_info.ip[0], net_info.ip[1], net_info.ip[2], net_info.ip[3]);
+	    }
 		/* Read analog values */
 		curr_bat = Read_ADC_Channel(ADC_CHANNEL_0);  // PA0
 		curr_up = Read_ADC_Channel(ADC_CHANNEL_1);   // PA1
